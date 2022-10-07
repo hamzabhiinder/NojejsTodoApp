@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <style>
+        .main {
+            width: 80%;
+            margin: auto;
+            background-color: honeydew;
+        }
+        
+
+        .center {
+            text-align: center;
+        }
+        #result{
+            display: inline-block;
+        }
+        #btns{
+            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+           text-align: right;
+     /* display: flex; */
+        
+        }
+        #result {
+            width: 100%;
+        }
+    </style>
+
+    <body>
+        <!-- Forms  -->
+        <div class="main">
+            <form onsubmit="postAllTodos(); return false">
+                <div class="mb-3">
+                    <label>TODO</label>
+                    <input type="text" class="form-control" id="todo">
+                    <div class="d-grid gap-1">
+                        <button  type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+
+                </div>
+            </form><br>
+            <div class="center">
+                <button onclick="getAllTodos()" class="btn btn-primary">Refresh</button>
+                <button onclick="deletes()" class="btn btn-primary">Delete</button>
+               
+            </div>
+            <h3 id="result"></h3>
+        </div>
+
+       </div>
+
+
+        <script>
+            let API = 'http://localhost:3000';
+            function deleteTodos (data_json){
+                try{
+                    const data = JSON.parse(data_json)
+                    
+                    axios.delete(`${API}/todos/${data._id}`).then(function (response){
+                        getAllTodos()
+                        console.log(response)
+                    })
+                    console.log(data)
+                }catch(e){
+                    console.log(e)
+                }
+            }
+          
+            function getAllTodos() {
+                axios.get(`${API}/todos`).then(function (response) {
+                    console.log(response.data)
+                    document.querySelector("#result").innerHTML = "";
+                   
+                    response.data.data.map(eachtodo => {
+                          
+
+                        document.querySelector("#result").innerHTML += ` <div id="btns">${eachtodo.text}<button onclick='deleteTodos(\`${JSON.stringify(eachtodo)}\`)'  class="btn btn-primary" >Delete</button></div>`
+
+                        document.querySelector("#result").innerHTML += "<br>"
+
+                    });
+                    
+
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            }
+              
+            
+            
+         
+            function postAllTodos() {
+                let todotext = document.querySelector("#todo").value;
+                axios.post(`${API}/todos`, {
+                    text: todotext
+                }).then(function (response) {
+                    console.log(response.data)
+                    document.querySelector("#result").innerHTML = ""
+
+                    response.data.data.map(each => {
+                        document.querySelector("#result").innerHTML += each.text ;
+                        document.querySelector("#result").innerHTML += "<br>"
+                    });
+
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            }
+        //    setInterval(getAllTodos, 3000)
+            getAllTodos();
+
+        </script>
+
+
+    </body>
+
+</html>
